@@ -65,15 +65,20 @@ export const formatDateTime = (dateString: Date) => {
   };
 };
 
-export function formatAmount(amount: number): string {
-  const formatter = new Intl.NumberFormat("en-US", {
+export function formatAmount(
+  amount: number, 
+  locale: string = "es-DO", //"en-US", "USD" || "de-DE", "EUR"
+  currency: string = "DOP"
+): string {
+  const formatter = new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: "USD",
+    currency: currency,
     minimumFractionDigits: 2,
   });
 
   return formatter.format(amount);
 }
+
 
 export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
 
