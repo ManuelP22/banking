@@ -17,6 +17,7 @@ import { authFormSchema } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { signIn, signUp } from '@/lib/actions/user.actions'
+import PlaidLink from '../_components/PlaidLink'
 
 const AuthForm = ({ type }: { type: string }) => {
     const [user, setUser] = useState(null);
@@ -32,28 +33,40 @@ const AuthForm = ({ type }: { type: string }) => {
 
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
         try {
-            // Sign up with Appwritte & create plaid token
-
-            if (type === 'sign-up') {
-                const newUser = await signUp(data);
-                if (newUser) {
-                    router.push('/')
-                    setUser(newUser)
-                }
+          // Sign up with Appwrite & create plaid token
+          
+          if(type === 'sign-up') {
+            const userData = {
+              firstName: data.firstName!,
+              lastName: data.lastName!,
+              address1: data.address1!,
+              city: data.city!,
+              state: data.state!,
+              postalCode: data.postalCode!,
+              dateOfBirth: data.dateOfBirth!,
+              ssn: data.ssn!,
+              email: data.email,
+              password: data.password
             }
-
-            if(type === 'sign-in') {
-                const response = await signIn({
-                    email: data.email,
-                    password: data.password,
-                });
-                if(response) router.push('/')
-            }
-            console.log(data)
+  
+            const newUser = await signUp(userData);
+  
+            setUser(newUser);
+          }
+  
+          if(type === 'sign-in') {
+            const response = await signIn({
+              email: data.email,
+              password: data.password,
+            })
+  
+            if(response) router.push('/')
+          }
         } catch (error) {
-            console.error(error)
+          console.log(error);
+        } finally {
         }
-    }
+      }
 
     return (
         <section className='auth-form'>
@@ -70,35 +83,27 @@ const AuthForm = ({ type }: { type: string }) => {
                     <h1 className='text-26 font-ibm-plex-serif font-bold text-black-1'>Sophia</h1>
                 </Link>
 
-                <div className='flex flex-col gap-1 md:gap-3'>
-                    <h1 className='text-24 lg:text-36 font-semibold text-gray-900'>
+                <div className="flex flex-col gap-1 md:gap-3">
+                    <h1 className="text-24 lg:text-36 font-semibold text-gray-900">
                         {user
-                            ? (
-                                <div className='flex flex-col gap-2'>
-                                    <h1 className='text-24 lg:text-36 font-semibold text-gray-900'>
-                                        Account Linked!
-                                    </h1>
-                                    <Link href={'/'} className='form-link'>
-                                        Go Home
-                                    </Link>
-                                </div>
-                            )
+                            ? 'Link Account'
                             : type === 'sign-in'
                                 ? 'Sign In'
                                 : 'Sign Up'
                         }
+                        <p className="text-16 font-normal text-gray-600">
+                            {user
+                                ? 'Link your account to get started'
+                                : 'Please enter your details'
+                            }
+                        </p>
                     </h1>
-                    <p className='text-16 font-normal text-gray-600'>
-                        {user
-                            ? 'Link your account to get started'
-                            : 'Please enter your details'
-                        }
-                    </p>
                 </div>
+                
             </header>
             {user ? (
                 <div className='flex flex-col gap-4'>
-                    {/* PlaidLink */}
+                    <PlaidLink user={user} variant="primary" />
                 </div>
             ) : (
                 <>
@@ -115,8 +120,8 @@ const AuthForm = ({ type }: { type: string }) => {
                                     <AuthInput control={form.control} name='city' label='City' placeholder='Enter your specific city' />
 
                                     <div className='flex gap-4'>
+                                        <AuthInput control={form.control} name='state' label='State' placeholder='Example: SD' />
                                         <AuthInput control={form.control} name='postalCode' label='Postal Code' placeholder='Example: 11101' />
-                                        <AuthInput control={form.control} name='state' label='State' placeholder='Example: Santo Domingo Este' />
                                     </div>
 
                                     <div className='flex gap-4'>
