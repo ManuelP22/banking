@@ -21,7 +21,6 @@ import { signIn, signUp } from '@/lib/actions/user.actions'
 const AuthForm = ({ type }: { type: string }) => {
     const [user, setUser] = useState(null);
     const router = useRouter();
-
     const formSchema = authFormSchema(type)
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -35,9 +34,12 @@ const AuthForm = ({ type }: { type: string }) => {
         try {
             // Sign up with Appwritte & create plaid token
 
-            if(type === 'sign-up') {
+            if (type === 'sign-up') {
                 const newUser = await signUp(data);
-                setUser(newUser)
+                if (newUser) {
+                    router.push('/')
+                    setUser(newUser)
+                }
             }
 
             if(type === 'sign-in') {
@@ -71,7 +73,16 @@ const AuthForm = ({ type }: { type: string }) => {
                 <div className='flex flex-col gap-1 md:gap-3'>
                     <h1 className='text-24 lg:text-36 font-semibold text-gray-900'>
                         {user
-                            ? 'Link Account'
+                            ? (
+                                <div className='flex flex-col gap-2'>
+                                    <h1 className='text-24 lg:text-36 font-semibold text-gray-900'>
+                                        Account Linked!
+                                    </h1>
+                                    <Link href={'/'} className='form-link'>
+                                        Go Home
+                                    </Link>
+                                </div>
+                            )
                             : type === 'sign-in'
                                 ? 'Sign In'
                                 : 'Sign Up'
@@ -96,8 +107,8 @@ const AuthForm = ({ type }: { type: string }) => {
                             {type === 'sign-up' && (
                                 <>
                                     <div className='flex gap-4'>
-                                        <AuthInput control={form.control} name='lastname' label='Last Name' placeholder='Enter your last name' />
                                         <AuthInput control={form.control} name='firstName' label='First Name' placeholder='Enter your first name' />
+                                        <AuthInput control={form.control} name='lastName' label='Last Name' placeholder='Enter your last name' />
                                     </div>
 
                                     <AuthInput control={form.control} name='address1' label='Address' placeholder='Enter your specific address' />

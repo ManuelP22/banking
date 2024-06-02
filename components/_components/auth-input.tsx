@@ -10,9 +10,9 @@ const formSchema = authFormSchema('sign-up');
 interface AuthInputProps {
     control: Control<z.infer<typeof formSchema>>;
     name: FieldPath<z.infer<typeof formSchema>>;
-    label?: string  | undefined;
+    label?: string | undefined;
     placeholder?: string | undefined;
-  }
+}
 
 const FormInput = ({ control, name, label, placeholder }: AuthInputProps) => {
     return (
@@ -27,6 +27,7 @@ const FormInput = ({ control, name, label, placeholder }: AuthInputProps) => {
                     <div className='flex w-full flex-col'>
                         <FormControl>
                             <Input
+                                id={name}
                                 placeholder={placeholder}
                                 type={name === 'password' ? 'password' : 'text'}
                                 className='input-class'
